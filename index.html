@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Click</title>
+    <title>Image</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/htmx.org@2.0.7"></script>
 </head>
 <body>
 
-<div class="container">
-    <img
-        src="adam.png"
-        alt="Image"
-        hx-on:click="document.getElementById('result').textContent='wew'">
-    <div id="result"></div>
-</div>
+<div class="background"></div>
+
+<img
+    id="photo"
+    src="adam.png"
+    alt="Image"
+    hx-on:click="document.getElementById('text').classList.add('show')">
+
+<div id="text">WEW</div>
 
 </body>
 </html>
