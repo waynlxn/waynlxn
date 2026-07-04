@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data>
+<html lang="en" x-data="{ playing: false }">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,11 +55,29 @@ body{
 }
 </style>
 </head>
-<body>
+<body
+x-init="
+$nextTick(() => {
+    const audio = $refs.audio;
+    audio.volume = 0.6;
+    audio.play().then(() => playing = true).catch(() => {
+        document.addEventListener('click', () => {
+            audio.play();
+            playing = true;
+        }, { once: true });
+    });
+});
+">
 
 <div class="bg"></div>
 <div class="overlay"></div>
 <div class="vignette"></div>
+
+<audio
+    x-ref="audio"
+    src="adam.mp3"
+    loop
+></audio>
 
 </body>
 </html>
