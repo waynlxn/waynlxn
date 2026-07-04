@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Background</title>
+<title>Adam</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
@@ -38,7 +38,7 @@ body{
     background:
         radial-gradient(circle at center,
             transparent 45%,
-            rgba(120,0,0,.35) 70%,
+            rgba(140,0,0,.35) 70%,
             rgba(0,0,0,.9) 100%);
     backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);
@@ -49,35 +49,39 @@ body{
     inset:-80px;
     pointer-events:none;
     box-shadow:
-        inset 0 0 180px rgba(0,0,0,.95),
-        inset 0 0 120px rgba(255,0,0,.35);
-    filter:blur(30px);
+        inset 0 0 200px rgba(0,0,0,.95),
+        inset 0 0 140px rgba(255,0,0,.35);
+    filter:blur(35px);
 }
 </style>
 </head>
-<body
-x-init="
-$nextTick(() => {
-    const audio = $refs.audio;
-    audio.volume = 0.6;
-    audio.play().then(() => playing = true).catch(() => {
-        document.addEventListener('click', () => {
-            audio.play();
-            playing = true;
-        }, { once: true });
-    });
-});
-">
+
+<body>
 
 <div class="bg"></div>
 <div class="overlay"></div>
 <div class="vignette"></div>
 
-<audio
-    x-ref="audio"
-    src="adam.mp3"
-    loop
-></audio>
+<audio id="bgm" src="adam.mp3" autoplay loop></audio>
+
+<script>
+const audio = document.getElementById("bgm");
+audio.volume = 0.6;
+
+const playAudio = () => {
+    audio.play().catch(() => {});
+};
+
+playAudio();
+
+document.addEventListener("click", playAudio, { once: true });
+document.addEventListener("touchstart", playAudio, { once: true });
+document.addEventListener("keydown", playAudio, { once: true });
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) playAudio();
+});
+</script>
 
 </body>
 </html>
