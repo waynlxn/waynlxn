@@ -1,89 +1,96 @@
 <!DOCTYPE html>
-<html lang="en" x-data>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Adam</title>
-
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
+<meta charset="UTF-8" />
+<title>ASCII Chess</title>
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#000;
-}
-
-body{
-    position:relative;
-}
-
-.bg{
-    position:fixed;
-    inset:0;
-    background:url("adam.png") center center/cover no-repeat;
-}
-
-.overlay{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:
-        radial-gradient(circle at center,
-        transparent 45%,
-        rgba(180,0,0,.35) 70%,
-        rgba(0,0,0,.95) 100%);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
-}
-
-.vignette{
-    position:fixed;
-    inset:-80px;
-    pointer-events:none;
-    box-shadow:
-        inset 0 0 220px rgba(0,0,0,.95),
-        inset 0 0 150px rgba(255,0,0,.35);
-    filter:blur(35px);
-}
+  body {
+    font-family: monospace;
+  }
+  #chessboard {
+    cursor: pointer;
+    line-height: 1.2;
+  }
 </style>
 </head>
 <body>
-
-<div class="bg"></div>
-<div class="overlay"></div>
-<div class="vignette"></div>
-
-<audio id="bgm" autoplay loop preload="auto">
-    <source src="adam.mp3" type="audio/mpeg">
-</audio>
-
+<pre id="chessboard"></pre>
 <script>
-const bgm = document.getElementById("bgm");
+const initialBoard = [
+  ['r','n','b','q','k','b','n','r'],
+  ['p','p','p','p','p','p','p','p'],
+  ['.','.','.','.','.','.','.','.'],
+  ['.','.','.','.','.','.','.','.'],
+  ['.','.','.','.','.','.','.','.'],
+  ['.','.','.','.','.','.','.','.'],
+  ['P','P','P','P','P','P','P','P'],
+  ['R','N','B','Q','K','B','N','R']
+];
 
-bgm.volume = 1;
+let board = initialBoard.map(row => row.slice());
+let selected = null;
 
-window.addEventListener("load", () => {
-    bgm.play().catch(() => {});
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    bgm.play().catch(() => {});
-});
-
-setInterval(() => {
-    if (bgm.paused) {
-        bgm.play().catch(() => {});
+// Function to render the board
+function renderBoard() {
+  let display = '';
+  for (let row = 0; row < 8; row++) {
+    display += (8 - row) + ' ';
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      // mark selected piece
+      if (selected && selected[0] === row && selected[1] === col) {
+        display += `[${piece}]`;
+      } else {
+        display += ' ' + piece + ' ';
+      }
     }
-}, 1000);
-</script>
+    display += '\n';
+  }
+  display += '  a  b  c  d  e  f  g  h\n';
+  document.getElementById('chessboard').textContent = display;
+}
 
+// Function to convert click position to board coordinates
+function getCoordsFromEvent(e) {
+  const rect = e.target.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const lineHeight = 20; // approximate line height
+  const charWidth = 10; // approximate char width
+  const row = Math.floor(y / lineHeight);
+  const col = Math.floor(x / charWidth);
+  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+    return [row, col];
+  }
+  return null;
+}
+
+document.getElementById('chessboard').addEventListener('click', (e) => {
+  // Get click position relative to text
+  const rect = e.target.getBoundingClientRect();
+  const y = e.clientY - rect.top;
+  const x = e.clientX - rect.left;
+  const lineHeight = 20; // same as above
+  const charWidth = 10; // same as above
+  const row = Math.floor(y / lineHeight);
+  const col = Math.floor(x / charWidth);
+  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+    if (!selected) {
+      // select a piece
+      selected = [row, col];
+    } else {
+      // move piece
+      const [sr, sc] = selected;
+      // simple move: allow move if destination is empty or opponent's piece
+      board[row][col] = board[sr][sc];
+      board[sr][sc] = '.';
+      selected = null;
+    }
+    renderBoard();
+  }
+});
+
+renderBoard();
+</script>
 </body>
 </html>
